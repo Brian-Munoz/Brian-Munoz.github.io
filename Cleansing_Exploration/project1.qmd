@@ -25,7 +25,6 @@ execute:
     
 ---
 
-
 ```{python}
 #| label: libraries
 #| include: false

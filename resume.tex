@@ -1,0 +1,289 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[top=20mm,left=20mm,right=20mm,bottom=20mm]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Brian A. Munoz - Resume},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Brian A. Munoz - Resume}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Brian A. Munoz}\label{brian-a.-munoz}
+
+Analytics Intern\\
+Bountiful, UT \textbar{} 385-299-5344 \textbar{} brianmunozr@gmail.com
+\textbar{} \href{www.linkedin.com/in/brian-mr}{LinkedIn}
+
+\subsection{Summary}\label{summary}
+
+With 3+ years of experience in data collection and analysis, my primary
+focus is driving informed decision-making through rigorous examination
+of complex datasets. I specialize in developing and implementing
+advanced analytical models, data visualization, translating findings
+into clear, strategic recommendations, and empowering teams to leverage
+data for goal achievement.
+
+My expertise includes creating innovative strategies to expand client
+reach and improve existing projects. I aim to uncover valuable insights
+that propel companies and their workforce towards sustainable success.
+
+\subsection{Experience}\label{experience}
+
+\subsubsection{Online Teaching
+Assistant}\label{online-teaching-assistant}
+
+\textbf{Brigham Young University Idaho} \textbar{} Rexburg, ID
+\textbar{} 05/2023 - Present
+
+\begin{itemize}
+\tightlist
+\item
+  Assist 50+ students and created personal reports for each one of them.
+\item
+  Use Excel and SQL queries to provide an understanding of the students
+  individual results and improvements.
+\item
+  Use advanced Excel skills to create personalized improvement plans for
+  students based on collected historical performance data available.
+\end{itemize}
+
+\subsubsection{Academic Advisor}\label{academic-advisor}
+
+\textbf{Brigham Young University} \textbar{} Rexburg, ID \textbar{}
+09/2021 - 04/2023
+
+\begin{itemize}
+\tightlist
+\item
+  Enhanced student academic progress by 25-35\% by conducting predictive
+  and diagnostic analysis via surveys.
+\item
+  Facilitated improved communication channels between full-time advisors
+  and part-time advisors.
+\item
+  Manage high-risk scenarios by maintaining comprehensive records to
+  devise satisfactory resolutions for students.
+\item
+  Conducted performance analysis of 25 employees utilizing
+  Excel-generated reports and provide plans of improvement.
+\end{itemize}
+
+\subsubsection{Missionary}\label{missionary}
+
+\textbf{The Church of Jesus Christ of LDS} \textbar{} Morristown, NJ
+\textbar{} 02/2018 - 02/2020
+
+\begin{itemize}
+\tightlist
+\item
+  Enhanced community development in 10+ New Jersey localities by
+  developing over 100 tailored English lesson plans and strategic.
+\item
+  Conducted training sessions for teams of 6 to 10 members to enhance
+  organizational performance during community events.
+\item
+  Cultivate strong rapport with key stakeholders and local leaders, and
+  evaluated program accomplishments by analyzing and documenting data
+  for participants and reports.
+\end{itemize}
+
+\subsubsection{Business Owner}\label{business-owner}
+
+\textbf{La Tienda} \textbar{} Guatemala City, Guatemala \textbar{} 2016
+- 2017
+
+\begin{itemize}
+\tightlist
+\item
+  Manage purchases and sales of the business and structure a growth plan
+  through the collection and analysis of sales history data.
+\item
+  Collects data to evaluate possible future products to increase profits
+  and decrease costs.
+\end{itemize}
+
+\subsection{Education}\label{education}
+
+\textbf{Bachelor in Business Analytics}\\
+Brigham Young University-Idaho \textbar{} Rexburg, ID \textbar{} 09/2020
+- 04/2025
+
+\subsection{Skills}\label{skills}
+
+Power BI, SQL, Microsoft Office, Python, Windows, Excel, Mac OS,
+Performance analysis, Leadership, Communication, Data Analysis, Problem
+Solving, Critical Thinking, Entrepreneurial
+
+\subsection{Languages}\label{languages}
+
+\begin{itemize}
+\tightlist
+\item
+  Spanish: Native
+\item
+  English: Proficient
+\end{itemize}
+
+\subsection{Strengths}\label{strengths}
+
+\textbf{Conflict resolution}: Conducting thorough analysis, exploring
+viable solutions, and providing comprehensive reports to leadership to
+ensure informed decision-making and strategic action.
+
+\subsection{Achievements}\label{achievements}
+
+\textbf{Productivity improvement}: Through extensive experimentation and
+iterative processes, I gained a comprehensive understanding of my team's
+strengths and limitations. As a result, we significantly enhanced our
+operational efficiency and produced more comprehensive reports, thereby
+facilitating informed decision-making at the executive level.
+
+\subsection{Passions}\label{passions}
+
+\begin{itemize}
+\tightlist
+\item
+  Data-driven decision-making
+\item
+  Puzzles
+\end{itemize}
+
+
+
+\end{document}
