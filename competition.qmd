@@ -1,10 +1,18 @@
 ---
-title: "about me"
+title: "Brian Munoz"
 subtitle: "my data science portfolio"
 # use quarto markdown to 
 ---
 
-# Title 1 Header
-## Title 2 Header
+# Why Data
+
+_I recently change my major to Business Analytics, but the data part is what catch my attention. I love to know why things happen, and even better how can I make them happen. Data does not only explain thinks around us, but has the potential to guide people and organizations to make smart decitions that will allow them to grow and become something even better. _
+
+## My Experience so far
+
+_I am still learning, I am very new in python and the other programing languges. Nevertheless, I love how just some simple commands can provide you a whole different pespective of a specific scenario. Data is everywhere, movies, games, politics, etc..._
+
+_Data can allow us to solve simple, and even very complecated problems. We just need to know how to explore it and how to interpretate it. Is like learning a whole different language, the language of data, the language of answers._
 
 [MarkDown Basics](https://quarto.org/docs/authoring/markdown-basics.html#links-images)
+
