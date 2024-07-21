@@ -1,89 +1,79 @@
 ---
-layout: cv
-title: Isaac Newtons's CV
+title: "Brian A. Munoz - Resume"
+format: 
+  html:
+    css: custom.css
+  pdf:
+    geometry:
+      - top=20mm
+      - left=20mm
+      - right=20mm
+      - bottom=20mm
 ---
-# Isaac Newton
-Physicist, Mathematician, Cambridge professor.
 
-<div id="webaddress">
-<a href="isaac@applesdofall.org">isaac@applesdofall.org</a>
-| <a href="http://en.wikipedia.org/wiki/Isaac_Newton">My wikipedia page</a>
-</div>
+# Brian A. Munoz
+Analytics Intern  
+Bountiful, UT | 385-299-5344 | brianmunozr@gmail.com | [LinkedIn](www.linkedin.com/in/brian-mr)
 
+## Summary
 
-## Currently
+With 3+ years of experience in data collection and analysis, my primary focus is driving informed decision-making through rigorous examination of complex datasets. I specialize in developing and implementing advanced analytical models, data visualization, translating findings into clear, strategic recommendations, and empowering teams to leverage data for goal achievement.
 
-Standing on the shoulders of giants
+My expertise includes creating innovative strategies to expand client reach and improve existing projects. I aim to uncover valuable insights that propel companies and their workforce towards sustainable success.
 
-### Specialized in
+## Experience
 
-Laws of motion, gravitation, minting coins, disliking [Robert Hooke](http://en.wikipedia.org/wiki/Robert_Hooke)
+### Online Teaching Assistant
+**Brigham Young University Idaho** | Rexburg, ID | 05/2023 - Present
 
+- Assist 50+ students and created personal reports for each one of them.
+- Use Excel and SQL queries to provide an understanding of the students individual results and improvements.
+- Use advanced Excel skills to create personalized improvement plans for students based on collected historical performance data available.
 
-### Research interests
+### Academic Advisor
+**Brigham Young University** | Rexburg, ID | 09/2021 - 04/2023
 
-Cooling, power series, optics, alchemy, planetary motions, apples.
+- Enhanced student academic progress by 25-35% by conducting predictive and diagnostic analysis via surveys.
+- Facilitated improved communication channels between full-time advisors and part-time advisors.
+- Manage high-risk scenarios by maintaining comprehensive records to devise satisfactory resolutions for students.
+- Conducted performance analysis of 25 employees utilizing Excel-generated reports and provide plans of improvement.
 
+### Missionary
+**The Church of Jesus Christ of LDS** | Morristown, NJ | 02/2018 - 02/2020
+
+- Enhanced community development in 10+ New Jersey localities by developing over 100 tailored English lesson plans and strategic.
+- Conducted training sessions for teams of 6 to 10 members to enhance organizational performance during community events.
+- Cultivate strong rapport with key stakeholders and local leaders, and evaluated program accomplishments by analyzing and documenting data for participants and reports.
+
+### Business Owner
+**La Tienda** | Guatemala City, Guatemala | 2016 - 2017
+
+- Manage purchases and sales of the business and structure a growth plan through the collection and analysis of sales history data.
+- Collects data to evaluate possible future products to increase profits and decrease costs.
 
 ## Education
 
-`1654-1660`
-__The King's School, Grantham.__
+**Bachelor in Business Analytics**  
+Brigham Young University-Idaho | Rexburg, ID | 09/2020 - 04/2025
 
-`June 1661 - now`
-__Trinity College, Cambridge__
+## Skills
 
-- Sizar
+Power BI, SQL, Microsoft Office, Python, Windows, Excel, Mac OS, Performance analysis, Leadership, Communication, Data Analysis, Problem Solving, Critical Thinking, Entrepreneurial
 
-`1667 - death`
-__Trinity College, Cambridge__
+## Languages
 
-- Fellow
+- Spanish: Native
+- English: Proficient
 
+## Strengths
 
+**Conflict resolution**: Conducting thorough analysis, exploring viable solutions, and providing comprehensive reports to leadership to ensure informed decision-making and strategic action.
 
-## Awards
+## Achievements
 
-`2012`
-President, *Royal Society*, London, UK
+**Productivity improvement**: Through extensive experimentation and iterative processes, I gained a comprehensive understanding of my team's strengths and limitations. As a result, we significantly enhanced our operational efficiency and produced more comprehensive reports, thereby facilitating informed decision-making at the executive level.
 
-Associate, *French Academy of Science*, Paris, France
+## Passions
 
-
-
-## Publications
-
-<!-- A list is also available [online](http://scholar.google.co.uk/citations?user=LTOTl0YAAAAJ) -->
-
-### Journals
-
-`1669`
-Newton Sir I, De analysi per æquationes numero terminorum infinitas. 
-
-`1669`
-Lectiones opticæ.
-
-etc. etc. etc.
-
-### Patents
-
-`2012`
-Infinitesimal calculus for solutions to physics problems, [SMBC](http://www.techdirt.com/articles/20121011/09312820678/if-patents-had-been-around-time-newton.shtml) patent 001
-
-
-## Occupation
-
-`1600`
-__Royal Mint__, London
-
-- Warden
-- Minted coins
-
-`1600`
-__Lucasian professor of Mathematics__, Cambridge University
-
-
-
-<!-- ### Footer
-
-Last updated: May 2013 -->
+- Data-driven decision-making
+- Puzzles
