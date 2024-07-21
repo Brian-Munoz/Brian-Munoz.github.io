@@ -1,7 +1,7 @@
 ---
-title: "Client Report - [Insert Project Title]"
+title: "project 5"
 subtitle: "Course DS 250"
-author: "[STUDENT NAME]"
+author: "Brian Munoz"
 format:
   html:
     self-contained: true
@@ -24,5 +24,510 @@ execute:
   warning: false
     
 ---
+## Streaming Services Analysis
 
-### Paste in a template
+_This analysis is intended to analyze how the entertainment industry invests its resources in different areas and how these impact its success. It also focuses on analyzing what audience they are trying to attract and how the genre of the movie or series impacts its success._
+
+```{python}
+#| output: asis
+import pandas as pd
+import matplotlib.pyplot as plt
+from IPython.display import display, Markdown
+from datetime import datetime
+
+
+def load_data(file_path):
+
+    """
+    Load data from a CSV file and convert 'Year' column.
+    
+    Parameters CSV file to read.
+    
+    Return: The CSV file.
+    """
+
+    df = pd.read_csv(file_path)
+    if 'Year' in df.columns:
+        df['Year'] = pd.to_datetime(df['Year'], format='%Y')
+    return df
+
+# Load the datasets
+df_genre = load_data('https://docs.google.com/spreadsheets/d/e/2PACX-1vRk4N_qCsv9odv-caI5zD3l1LU1RUQAB8dBTSa7I3SdWM7UjPCHRE_omcKzDsDpejH6tqXirzMl0UzR/pub?gid=968459257&single=true&output=csv')
+df_movies_data = load_data('https://docs.google.com/spreadsheets/d/e/2PACX-1vSOuzSVo0aXNE5Hmg8NYuxGAPoP_NoNrVpjDcpctDOWt0PGWy1AdAkB1GEJkGho5whz6T8HGkSbV0Vu/pub?gid=1082575037&single=true&output=csv')
+df_movies = load_data('https://docs.google.com/spreadsheets/d/e/2PACX-1vQHKR-czBp8PJ04SfA58SOc6bhF297FP63w6-lvyvJVZyMDoAsjQjdTQgnfKiMYC7Z83xolXWKiWzaz/pub?gid=302209156&single=true&output=csv')
+```
+
+### Average Rating by Streaming Service
+
+_This section analyzes each streaming platform, because each platform has many shows, some better known than others. It is established that having a Rating above 6 points is the most ideal. This shows that the platform generally offers content that the standard customer consumes._
+
+``` {python}
+
+#| output: asis
+def average_rating_by_service(df):
+
+    """
+    Calculate the average rating for each streaming service.
+    
+    Parameters
+    
+    Return: Chart
+    """
+
+    avg_rating = df.groupby('Streaming_Name')['Rating'].mean().sort_values(ascending=False)
+    
+    display(avg_rating)
+    
+    plt.figure(figsize=(12, 6))
+    avg_rating.plot(kind='bar')
+    plt.title('Rating by Streaming Service')
+    plt.xlabel('Streaming Service')
+    plt.ylabel('Average Rating')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('avg_rating_by_service.png')
+    plt.close()
+    display(Markdown("#### Average Rating by Streaming Service"))
+    display(Markdown("![Average Rating by Streaming Service](avg_rating_by_service.png)"))
+
+average_rating_by_service(df_genre)
+
+```
+
+### Number of Titles per Streaming Service
+
+_I wanted to show how meany shows each streming service offere to their clients. Keep in mind that some streming services offered different titles per region which might increase the number of shows in general. _
+
+``` {python}
+
+#| output: asis
+def titles_per_service(df):
+
+    """
+    Count Number of titles for each streaming service.
+    
+    Parameters
+    
+    Return: Chart
+    """
+
+    title_count = df['Streaming_Name'].value_counts()
+    
+    display(title_count)
+    
+    plt.figure(figsize=(12, 6))
+    title_count.plot(kind='bar')
+    plt.title('Number of Titles per Streaming Service')
+    plt.xlabel('Streaming Service')
+    plt.ylabel('Number of Titles')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('titles_per_service.png')
+    plt.close()
+    display(Markdown("#### Number of Titles per Streaming Service"))
+    display(Markdown("![Number of Titles per Streaming Service](titles_per_service.png)"))
+
+titles_per_service(df_genre)
+
+```
+
+### Rating Distribution by Streaming Service
+
+_This section shows a general summary of how the viwers rate each streming service. This was accomplish by taking all the votes for each show and divide them by each streming service. This let us know that all streming service have great succeses and failus, but it was Hulu the one that shous a slitly higher result compare to the others. 
+
+``` {python}
+
+#| output: asis
+def rating_distribution_by_service(df):
+
+    """
+    Display Rating for each streaming service.
+    
+    Parameters
+    
+    Return: Chart
+    """
+
+    display(df.groupby('Streaming_Name')['Rating'].describe())
+    
+    plt.figure(figsize=(12, 6))
+    df.boxplot(column=['Rating'], by='Streaming_Name', figsize=(12, 6))
+    plt.suptitle('') 
+    plt.xlabel('Streaming Service')
+    plt.ylabel('Rating')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('rating_distribution.png')
+    plt.close()
+
+    display(Markdown("![Rating Distribution by Streaming Service](rating_distribution.png)"))
+
+rating_distribution_by_service(df_genre)
+
+```
+
+### Time-based Analysis / Average Rating by Year
+
+_This section shows that the average rating per show has decrease in the last couple years but resently has experience a significant recovery, this could be because the Covid 19 many people start to watch way more shows thorugh streming services._
+
+``` {python}
+
+#| output: asis
+def average_rating_by_year(df):
+
+    """
+    Calculate Average rating by year from 2000 to 2021.
+    
+    Parameters
+        'Year' and 'Rating' columns.
+    
+    Return: Chart
+    """
+
+    # Convert Year to datetime if it's not already
+    if not pd.api.types.is_datetime64_any_dtype(df['Year']):
+        df['Year'] = pd.to_datetime(df['Year'], format='%Y')
+    
+    # Filter for years 2000 to 2021
+    df_filtered = df[(df['Year'].dt.year >= 2000) & (df['Year'].dt.year <= 2021)]
+    
+    yearly_avg_rating = df_filtered.groupby(df_filtered['Year'].dt.year)['Rating'].mean()
+    
+    plt.figure(figsize=(12, 6))
+    yearly_avg_rating.plot(kind='line')
+    plt.title('Average Rating by Year (2000-2021)')
+    plt.xlabel('Year')
+    plt.ylabel('Average Rating')
+    plt.xlim(2000, 2021)
+    plt.tight_layout()
+    plt.savefig('avg_rating_by_year.png')
+    plt.close()
+    display(Markdown("#### Chart: Average Rating by Year (2000-2021)"))
+    display(Markdown("![Average Rating by Year](avg_rating_by_year.png)"))
+
+average_rating_by_year(df_genre)
+
+```
+
+### Number of Titles by Year
+
+_I wanted to show that even if in general more people were whaching more shows through steming, because of covid the number of new shows drasticly decresed._
+
+``` {python}
+
+#| output: asis
+def titles_by_year(df):
+
+    """
+    Count Number of titles by year.
+    
+    Parameters
+        'Year' column.
+    
+    Return: Chart
+    """
+    yearly_title_count = df.groupby(df['Year'].dt.year).size()
+
+    plt.figure(figsize=(12, 6))
+    yearly_title_count.plot(kind='line')
+    plt.title('Number of Titles by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Number of Titles')
+    plt.tight_layout()
+    plt.savefig('titles_by_year.png')
+    plt.close()
+    display(Markdown("#### Chart: Number of Titles by Year"))
+    display(Markdown("![Number of Titles by Year](titles_by_year.png)"))
+
+titles_by_year(df_genre)
+
+```
+
+### Age Group Analysis
+
+_We can see that the number of shows directed to a adult audience have take a significate percentange of space in each strming plataform. Something to concider if you have a family and do not which to expose your children or minors to such content._
+
+``` {python}
+
+#| output: asis
+def shows_by_age_group(df):
+
+    """
+    Count Number of shows by age
+    
+    Parameters
+        'Age' column.
+    
+    Return: Chart.
+    """
+
+    age_count = df['Age'].value_counts().sort_index()
+    
+    display(Markdown("### Number of Shows by Age Group"))
+    display(Markdown("#### Table: Shows by Age Group"))
+    display(age_count)
+    
+    plt.figure(figsize=(12, 6))
+    age_count.plot(kind='bar')
+    plt.title('Number of Shows by Age Group')
+    plt.xlabel('Age Group')
+    plt.ylabel('Number of Shows')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig('shows_by_age_group.png')
+    plt.close()
+    display(Markdown("#### Chart: Shows by Age Group"))
+    display(Markdown("![Shows by Age Group](shows_by_age_group.png)"))
+
+shows_by_age_group(df_genre)
+
+```
+
+### Gendre Analysis (Mpvies)
+
+_Moving to the movies analysis, I first wanted to show the top 10 genres in which the entretement indurstry has expent more of their resorces and later analyze if their investments were smart or not. I used the data base for rotten tomatoes and compared to the data in IMB to have both perspectives.  
+
+``` {python}
+
+def analyze_genres(df_movies_data, df_movies):
+
+    """
+    Analyze Genre from different datasets.
+    
+    Parameters
+        df_movies_data: space-separated.
+        df_movies: comma-separated.
+    
+    Return: Chart
+    """
+
+    # Function to split genres and count for movies_data.csv (space-separated)
+    def count_genres_space(series):
+        genre_list = []
+        for genres in series:
+            if isinstance(genres, str):
+                genre_list.extend([genre.strip() for genre in genres.split()])
+        return pd.Series(genre_list).value_counts()
+    
+    # Function to split genres and count for movies.csv (comma-separated)
+    def count_genres_comma(series):
+        genre_list = []
+        for genres in series:
+            if isinstance(genres, str):
+                genre_list.extend([genre.strip() for genre in genres.split(',')])
+        return pd.Series(genre_list).value_counts()
+    
+    # Analyze genres from movies_data.csv
+    genres_movies_data = count_genres_space(df_movies_data['genres'])
+    genres_movies_data = genres_movies_data.nlargest(10)  # Get top 10 genres
+    
+    # Analyze genres from movies.csv
+    genres_movies = count_genres_comma(df_movies['genres'])
+    genres_movies = genres_movies.nlargest(10)  # Get top 10 genres
+    
+    display(genres_movies_data)
+    
+    plt.figure(figsize=(12, 8))
+    genres_movies_data.plot(kind='bar')
+    plt.title('Top 10 Genres in Movies (Rotten Tomatoes)')
+    plt.xlabel('Genre')
+    plt.ylabel('Number of Movies')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('genres_movies_data.png')
+    plt.close()
+    display(Markdown("#### Top 10 Genres"))
+    display(Markdown("![Top 10 Genres](genres_movies_data.png)"))
+    
+    # Display results for movies.csv
+
+    display(genres_movies)
+    
+    plt.figure(figsize=(12, 8))
+    genres_movies.plot(kind='bar')
+    plt.title('Top 10 Genres in Movies (IMB)')
+    plt.xlabel('Genre')
+    plt.ylabel('Number of Movies')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('genres_movies.png')
+    plt.close()
+    display(Markdown("#### Top 10 Genres"))
+    display(Markdown("![Top 10 Genres](genres_movies.png)"))
+
+analyze_genres(df_movies_data, df_movies)
+
+
+```
+
+### Gender Vote
+
+_This section now limits the results for the past 24 years that shows that overall the industry is still offering in general waht the viwers want to watch but that genes as documentaris and comedy have lost some value in the viwers pespective. We need to keep in mind that their are still many of this genres that are succesfull and that this analysis just takes an overall pespective of what the viwers value the most._
+
+``` {python}
+
+def vote_average_by_genre_cleaned_movies(df):
+
+    """
+    Calculate Aaverage vote by genre for movies from 2000 to 2024.
+    
+    Parameters
+        'release_date', 'genres', and 'vote_average' columns.
+    
+    Return: Chart.
+    """
+
+    # Convert release_date to datetime
+    df['release_date'] = pd.to_datetime(df['release_date'])
+    
+    # Filter for movies from 2000 to 2024
+    df_filtered = df[(df['release_date'].dt.year >= 2000) & (df['release_date'].dt.year <= 2024)]
+    
+    # Split genres and explode the dataframe
+    df_exploded = df_filtered.assign(genres=df_filtered['genres'].str.split('-')).explode('genres')
+    
+    # Group by genre and calculate mean vote_average
+    vote_avg_by_genre = df_exploded.groupby('genres')['vote_average'].mean().sort_values(ascending=False)
+    
+    # Get top 10 genres
+    top_10_genres = vote_avg_by_genre.head(10)
+    
+    display(Markdown("### Vote Average by Genre (2000-2024)"))
+    display(Markdown("#### Table: Average Vote by Genre (Top 10)"))
+    display(top_10_genres)
+    
+    plt.figure(figsize=(12, 6))
+    top_10_genres.plot(kind='bar')
+    plt.title('Average Vote by Genre (Top 10, 2000-2024)')
+    plt.xlabel('Genre')
+    plt.ylabel('Average Vote')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('vote_average_by_genre_cleaned_movies.png')
+    plt.close()
+    display(Markdown("#### Chart: Average Vote by Genre (Top 10, 2000-2024)"))
+    display(Markdown("![Average Vote by Genre](vote_average_by_genre_cleaned_movies.png)"))
+
+# Assuming df_cleaned_movies is already loaded
+vote_average_by_genre_cleaned_movies(df_movies)
+
+```
+
+
+### Revenue and Budget Analysis
+
+_Many people used to tell me that if a movie spent a lot of many of makes a lot of money it will be good. We can see now that that is not correct. The correlation shows that in many cases the budget and revenew will afect one another, but concerning movie quality or succes in satisfiing the viwers, their is not correlation between the budget or revenue witht he Vote Average that the viwers give to the movie._
+
+``` {python}
+
+#In case I wanted to calculated revenue in the future
+def revenue_by_genre(df):
+
+    """
+    Calculate Average revenue by genre.
+    
+    Parameters
+        'genres' and 'revenue' columns.
+    
+    Return: Chart
+    """
+
+    # Split the genres and explode the dataframe
+    df_exploded = df.assign(genres=df['genres'].str.split(',')).explode('genres')
+    
+    # Group by genre and calculate mean revenue
+    revenue_by_genre = df_exploded.groupby('genres')['revenue'].mean().sort_values(ascending=False)
+    
+    display(Markdown("### Revenue by Genre"))
+    display(Markdown("#### Table: Average Revenue by Genre"))
+    display(revenue_by_genre)
+    
+    plt.figure(figsize=(12, 6))
+    revenue_by_genre.plot(kind='bar')
+    plt.title('Average Revenue by Genre')
+    plt.xlabel('Genre')
+    plt.ylabel('Average Revenue')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('revenue_by_genre.png')
+    plt.close()
+    display(Markdown("#### Chart: Average Revenue by Genre"))
+    display(Markdown("![Average Revenue by Genre](revenue_by_genre.png)"))
+
+def revenue_by_production_company(df):
+    # Split the production companies and explode the dataframe
+    df_exploded = df.assign(production_companies=df['production_companies'].str.split(',')).explode('production_companies')
+    
+    # Group by production company and calculate mean revenue
+    revenue_by_company = df_exploded.groupby('production_companies')['revenue'].mean().sort_values(ascending=False).head(20)
+    
+    display(Markdown("### Revenue by Production Company"))
+    display(Markdown("#### Table: Average Revenue by Production Company (Top 20)"))
+    display(revenue_by_company)
+    
+    plt.figure(figsize=(12, 6))
+    revenue_by_company.plot(kind='bar')
+    plt.title('Average Revenue by Production Company (Top 20)')
+    plt.xlabel('Production Company')
+    plt.ylabel('Average Revenue')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('revenue_by_production_company.png')
+    plt.close()
+    display(Markdown("#### Chart: Average Revenue by Production Company (Top 20)"))
+    display(Markdown("![Average Revenue by Production Company](revenue_by_production_company.png)"))
+
+def vote_average_by_genre_10(df):
+    # Split the genres and explode the dataframe
+    df_exploded = df.assign(genres=df['genres'].str.split(',')).explode('genres')
+    
+    # Group by genre and calculate mean vote_average
+    vote_avg_by_genre = df_exploded.groupby('genres')['vote_average'].mean().sort_values(ascending=False)
+    
+    # Get top 10 genres
+    top_10_genres = vote_avg_by_genre.head(10)
+
+
+def correlation_analysis(df):
+    # Calculate correlations
+    corr_budget_revenue = df['budget'].corr(df['revenue'])
+    corr_budget_vote = df['budget'].corr(df['vote_average'])
+    corr_revenue_vote = df['revenue'].corr(df['vote_average'])
+    
+    display(Markdown("### Correlation Analysis"))
+    display(Markdown(f"Correlation between Budget and Revenue: {corr_budget_revenue:.2f}"))
+    display(Markdown(f"Correlation between Budget and Vote Average: {corr_budget_vote:.2f}"))
+    display(Markdown(f"Correlation between Revenue and Vote Average: {corr_revenue_vote:.2f}"))
+    
+    # Scatter plots
+    plt.figure(figsize=(18, 6))
+    
+    plt.subplot(131)
+    plt.scatter(df['budget'], df['revenue'])
+    plt.title('Budget vs Revenue')
+    plt.xlabel('Budget')
+    plt.ylabel('Revenue')
+    
+    plt.subplot(132)
+    plt.scatter(df['budget'], df['vote_average'])
+    plt.title('Budget vs Vote Average')
+    plt.xlabel('Budget')
+    plt.ylabel('Vote Average')
+    
+    plt.subplot(133)
+    plt.scatter(df['revenue'], df['vote_average'])
+    plt.title('Revenue vs Vote Average')
+    plt.xlabel('Revenue')
+    plt.ylabel('Vote Average')
+    
+    plt.tight_layout()
+    plt.savefig('correlation_analysis.png')
+    plt.close()
+    display(Markdown("#### Chart: Correlation Analysis"))
+    display(Markdown("![Correlation Analysis](correlation_analysis.png)"))
+
+# Run the analyses
+vote_average_by_genre_10(df_movies)
+correlation_analysis(df_movies)
+
+```
