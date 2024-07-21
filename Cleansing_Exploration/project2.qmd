@@ -1,7 +1,7 @@
 ---
-title: "Client Report - [Insert Project Title]"
+title: "Client Report - Finding Relationships in Baseball"
 subtitle: "Course DS 250"
-author: "[STUDENT NAME]"
+author: "Brian Munoz"
 format:
   html:
     self-contained: true
@@ -25,4 +25,264 @@ execute:
     
 ---
 
-### Paste in a template
+
+```{python}
+import pandas as pd 
+import numpy as np
+import sqlite3
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+```
+
+
+### Baseball, a game of perspective
+
+_This report will allow us to observe the importance of not limiting ourselves to the most recent results. We will observe how the effectiveness of the players changes as they participate in more games. The success of those of players who have played at BYU-Idaho. And finally we will compare the effectiveness in which two great teams use their resources and how this affects their number of victories. _
+
+## QUESTION|TASK 1
+
+__Write an SQL query to create a new dataframe about baseball players who attended BYU-Idaho. The new table should contain five columns: playerID, schoolID, salary, and the yearID/teamID associated with each salary. Order the table by salary (highest to lowest) and print out the table in your report.__
+
+```{python}
+#| label: Q1
+#| code-summary: BYU_Idaho list of students
+#| fig-align: center
+
+conn = sqlite3.connect('lahmansbaseballdb.sqlite')
+
+cur = conn.cursor()
+
+query = """
+SELECT DISTINCT s.playerID, cp.schoolID, s.salary, s.yearID, s.teamID
+FROM salaries s
+JOIN collegeplaying cp ON s.playerID = cp.playerID
+WHERE s.playerID IN (SELECT playerID FROM collegeplaying WHERE schoolID = "idbyuid")
+ORDER BY s.salary DESC
+"""
+
+cur.execute(query)
+results = cur.fetchall()
+
+df = pd.DataFrame(results, columns=['playerID', 'schoolID', 'salary', 'yearID', 'teamID'])
+
+print(df)
+
+```
+
+```{python}
+#| label: Q1-chart
+#| fig-align: center
+
+
+query = """
+SELECT yearID, AVG(salary) as avg_salary
+FROM salaries
+GROUP BY yearID
+ORDER BY yearID
+"""
+
+cur.execute(query)
+results = cur.fetchall()
+
+df = pd.DataFrame(results, columns=['yearID', 'avg_salary'])
+
+plt.figure(figsize=(15, 8))
+bars = plt.bar(df['yearID'], df['avg_salary'], color='skyblue', alpha=0.7)
+
+# Guide line
+plt.plot(df['yearID'], df['avg_salary'], color='red', linewidth=2, marker='o')
+
+plt.title('Average MLB Salary by Year', fontsize=16)
+plt.xlabel('Year', fontsize=12)
+plt.ylabel('Average Salary ($)', fontsize=12)
+plt.xticks(rotation=45)
+
+plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x:,.0f}'))
+
+for bar in bars:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2., height/2,
+             f'${height:,.0f}',
+             ha='center', va='center', rotation=90, color='white', fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+```
+
+## QUESTION|TASK 2
+
+__This three-part question requires you to calculate batting average (number of hits divided by the number of at-bats)__
+
+##### A. Write an SQL query that provides playerID, yearID, and batting average for players with at least 1 at bat that year. Sort the table from highest batting average to lowest, and then by playerid alphabetically. Show the top 5 results in your report.
+
+  -They where some players that only where at the bat onces which amde their average batting score extremly higher than other players in comparition-
+
+```{python}
+#| label: Q2
+#| code-summary: 1 game table
+
+query = """
+SELECT playerID, yearID, 
+       CAST(SUM(H) AS FLOAT) AS total_hits,
+       CAST(SUM(AB) AS FLOAT) AS total_at_bats,
+       (CAST(SUM(H) AS FLOAT) / CAST(SUM(AB) AS FLOAT))*100 AS batting_average_percentage
+FROM batting
+WHERE H >= 1
+GROUP BY playerID, yearID
+ORDER BY batting_average_percentage DESC, playerID
+LIMIT 5
+"""
+
+cur.execute(query)
+results = cur.fetchall()
+
+df = pd.DataFrame(results, columns=['playerID', 'yearID', 'total_hits', 'total_at_bats', 'batting_average'])
+
+pd.set_option('display.float_format', '{:.2f}'.format)
+print("\nFormatted results:")
+print(df)
+
+```
+
+##### B. Use the same query as above, but only include players with at least 10 at bats that year. Print the top 5 results.
+
+ -We can see that now that we are looking for players who make more calls, the percentage of calls has decreased more drastically.-
+
+```{python}
+#| label: Q2-chart
+#| code-summary: 10 games table
+#| fig-align: center
+
+query = """
+SELECT playerID, yearID, 
+       CAST(SUM(H) AS FLOAT) AS total_hits,
+       CAST(SUM(AB) AS FLOAT) AS total_at_bats,
+       (CAST(SUM(H) AS FLOAT) / CAST(SUM(AB) AS FLOAT))*100 AS batting_average_percentage
+FROM batting
+WHERE H >= 10
+GROUP BY playerID, yearID
+ORDER BY batting_average_percentage DESC, playerID
+LIMIT 5
+"""
+
+cur.execute(query)
+results = cur.fetchall()
+
+df = pd.DataFrame(results, columns=['playerID', 'yearID', 'total_hits', 'total_at_bats', 'batting_average'])
+
+pd.set_option('display.float_format', '{:.2f}'.format)
+print("\nFormatted results:")
+print(df)
+```
+
+##### C. Now calculate the batting average for players over their entire careers (all years combined). Only include players with at least 100 at bats, and print the top 5 results.
+
+  -Now we can observe players who not only performed well, but also had greater participation in their teams. The following table shows that as the hitting percentage decreases, the participation of the players increases. In conclusion, it is normal to expect hitting percentage to drop as players participate in more games.-
+
+
+```{python}
+#| label: Q2-table
+#| code-summary: 100 games table
+
+query = """
+SELECT playerID, yearID, 
+       CAST(SUM(H) AS FLOAT) AS total_hits,
+       CAST(SUM(AB) AS FLOAT) AS total_at_bats,
+       (CAST(SUM(H) AS FLOAT) / CAST(SUM(AB) AS FLOAT))*100 AS batting_average_percentage
+FROM batting
+WHERE H >= 100
+GROUP BY playerID, yearID
+ORDER BY batting_average_percentage DESC, playerID
+LIMIT 5
+"""
+
+cur.execute(query)
+results = cur.fetchall()
+
+df = pd.DataFrame(results, columns=['playerID', 'yearID', 'total_hits', 'total_at_bats', 'batting_average'])
+
+pd.set_option('display.float_format', '{:.2f}'.format)
+print("\nFormatted results:")
+print(df)
+
+```
+
+
+## QUESTION|TASK 3
+
+__Pick any two baseball teams and compare them using a metric of your choice (average salary, home runs, number of wins, etc). Write an SQL query to get the data you need, then make a graph using Plotly Express to visualize the comparison. What do you learn?__
+
+_I did a comparison of Total Salary and Wins of Yankees vs White Sox for the past 25 years. This allow us to see that even if the Yankees have a higher wins cound, White Sox have show great efficiency by having a great win record and espending almost 50% less than the Yankees._
+
+```{python}
+#| label: Q3
+#| code-summary: Yankees vs Sox (25 years)
+# Include and execute your code here
+
+query = """
+SELECT t.name, 
+       ROUND(SUM(s.salary) / 1000000, 2) as team_total_salary,
+       ROUND(SUM(t.W), 2) as total_wins
+FROM teams t
+JOIN salaries s ON t.teamID = s.teamID AND t.yearID = s.yearID
+WHERE t.teamID IN ("NYA","CHA") 
+  AND t.name != 'New York Highlanders'
+  AND t.yearID BETWEEN 1992 AND 2016  -- Filter for the past 25 years
+GROUP BY t.name
+"""
+
+# Execute the query and load results into a DataFrame
+df = pd.read_sql_query(query, conn)
+
+# Create two subplots side by side
+fig = make_subplots(rows=1, cols=2, subplot_titles=("Total Salary (Millions $)", "Total Wins"))
+
+# Add bar chart for total salary
+fig.add_trace(
+    go.Bar(
+        x=df['name'], 
+        y=df['team_total_salary'], 
+        name="Total Salary",
+        text=df['team_total_salary'].apply(lambda x: f'{x:.2f}M'),
+        textposition='inside',
+        insidetextanchor='middle',
+        marker_color='blue'
+    ),
+    row=1, col=1
+)
+
+# Add bar chart for total wins
+fig.add_trace(
+    go.Bar(
+        x=df['name'], 
+        y=df['total_wins'], 
+        name="Total Wins",
+        text=df['total_wins'].apply(lambda x: f'{x:.0f}'),
+        textposition='inside',
+        insidetextanchor='middle',
+        marker_color='green'
+    ),
+    row=1, col=2
+)
+
+# Update layout
+fig.update_layout(
+    title={
+        'text': "Yankees vs White Sox (1992-2016)",
+        'x': 0.5,
+        'xanchor': 'center'
+    },
+    showlegend=False,
+    height=600,
+    width=1000
+)
+
+# Show the plot
+fig.show()
+
+
+```
+
+

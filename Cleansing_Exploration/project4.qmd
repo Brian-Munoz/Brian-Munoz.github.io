@@ -1,7 +1,7 @@
 ---
-title: "Client Report - [Insert Project Title]"
+title: "Predicting Pre-1980 Houses in Denver"
 subtitle: "Course DS 250"
-author: "[STUDENT NAME]"
+author: "Brian Munoz"
 format:
   html:
     self-contained: true
@@ -25,4 +25,192 @@ execute:
     
 ---
 
-### Paste in a template
+
+```{python}
+#| label: libraries
+#| include: false
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix
+from sklearn.model_selection import GridSearchCV
+```
+
+```{python}
+
+#| label: project-data
+#| code-summary: Read and format project data
+
+url = "https://raw.githubusercontent.com/byuidatascience/data4dwellings/master/data-raw/dwellings_denver/dwellings_denver.csv"
+df = pd.read_csv(url)
+df['before1980'] = df['yrbuilt'] < 1980
+
+```
+
+
+## Elevator pitch
+
+After filtering all the housess that where build pre-1980, using machine learning techniques that will allow us to predict the most lickely houses that were build during this time. 
+
+This model uses the following factors to determine a house's age. I use features such as living area, basement characteristics, and price-related variables, offering a robust tool for estimating construction periods of houses with missing data, the reason is because most residence share similarities according the areas in which were build.
+
+## QUESTION|TASK 1
+
+__Create 2-3 charts that evaluate potential relationships between the home variables and 'before1980'. Explain what you learn from the charts that could help a machine learning algorithm.__
+
+
+```{python}
+#| label: Q1
+#| code-summary: Create charts for data exploration
+
+# Chart 1: Living Area
+fig1 = px.box(df, x='before1980', y='livearea', title='Living Area for Houses Built Before and After 1980')
+fig1.show()
+
+# Chart 2: Year Built vs Selling Price
+fig2 = px.scatter(df, x='yrbuilt', y='sprice', color='before1980', 
+                  title='Year Built vs Selling Price')
+fig2.show()
+
+# Chart 3: Number of Bedrooms
+fig3 = px.box(df, x='before1980', y='numbdrm', title='Number of Bedrooms for Houses Built Before and After 1980')
+fig3.show()
+
+```
+
+
+From these charts, we can observe:
+
+First, Houses built before 1980 tend to have smaller living areas on average. We can spect that such houses will be located in smaller living areas. 
+
+Second, There is not a clear distinction in selling prices between older and newer houses close to the year 1980, The newer houses generally being more expensive which allow us to filter them out of our analysis.
+
+Third, Older houses tend to have slightly fewer bedrooms on average.
+
+This information allow us to filter most of the houses that are most likely newer and focus our analysis in the older houses. 
+
+## QUESTION|TASK 2
+
+__Build a classification model labeling houses as being built "before 1980" or "during or after 1980". Your goal is to reach or exceed 90% accuracy. Explain your final model choice (algorithm, tuning parameters, etc) and describe what other models you tried.__
+
+```{python}
+#| label: Q2
+#| code-summary: Build and train the classification model
+
+features = ['livearea', 'basement', 'stories',
+            'numbaths', 'sprice', 'netprice', 'tasp']
+
+X = df[features]
+y = df['before1980']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+rf = RandomForestClassifier(random_state=42)
+
+param_grid = {
+    'n_estimators': [100, 200, 300],
+    'max_depth': [10, 20, 30, None],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+}
+
+grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+grid_search.fit(X_train_scaled, y_train)
+
+best_rf = grid_search.best_estimator_
+y_pred = best_rf.predict(X_test_scaled)
+
+accuracy = accuracy_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+roc_auc = roc_auc_score(y_test, best_rf.predict_proba(X_test_scaled)[:, 1])
+
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Balance: {f1:.4f}")
+print(f"Distinguish: {roc_auc:.4f}")
+# print(f"Best parameters: {grid_search.best_params_}")
+
+# Create a bar chart comparing houses built before 1980 and during or after 1980
+house_counts = df['before1980'].value_counts().sort_index()
+fig = px.bar(x=['During or After 1980', 'Before 1980'], y=house_counts.values,
+             labels={'x': 'Period', 'y': 'Number of Houses'},
+             title='Distribution of Houses Built Before 1980 vs During or After 1980')
+fig.update_traces(marker_color=['#1E88E5', '#FFC107'])  # Add custom colors
+fig.show()
+
+```
+
+_We chose a Random Forest Classifier for this task due to its ability to handle complex relationships and its generally good performance on a wide range of problems. After tuning hyperparameters using GridSearchCV, we achieved an accuracy exceeding 90%.
+Other models we considered included Logistic Regression and Gradient Boosting, but Random Forest provided the best balance of accuracy and interpretability for this task._
+
+## QUESTION|TASK 3
+
+__Justify your classification model by discussing the most important features selected by your model. This discussion should include a feature importance chart and a description of the features.__
+
+```{python}
+#| label: Q3
+#| code-summary: Feature importance analysis
+
+feature_importance = pd.DataFrame({
+    'feature': features,
+    'importance': best_rf.feature_importances_
+}).sort_values('importance', ascending=False)
+
+fig = px.bar(feature_importance, x='importance', y='feature', orientation='h',
+             title='Feature Importance')
+fig.show()
+
+```
+
+The feature importance chart shows that the most influential features for classifying houses as built before or after 1980 are:
+
+Living area (livearea) Basement area (basement) Selling price (sprice) Stories (number of stories) between others
+
+_This aligns with our initial exploratory data analysis, which showed clear differences in these features between older and newer houses, specialy in the living area aspect._ 
+
+## QUESTION|TASK 4
+
+__Describe the quality of your classification model using 2-3 different evaluation metrics. You also need to explain how to interpret each of the evaluation metrics you use.__
+
+
+```{python}
+#| label: Q4
+#| code-summary: Model evaluation metrics
+
+print(f"Accuracy: {accuracy:.2f}")
+print(f"Balance: {f1:.2f}")
+print(f"Distinguish: {roc_auc:.2f}")
+
+cm = confusion_matrix(y_test, y_pred)
+fig = px.imshow(cm, text_auto=True, color_continuous_scale='Blues',
+                labels=dict(x="Predicted Label", y="True Label"),
+                x=['After 1980', 'Before 1980'],
+                y=['After 1980', 'Before 1980'])
+fig.update_layout(title='Confusion Matrix')
+fig.show()
+```
+
+We used three metrics to evaluate our model:
+
+Accuracy:
+
+The model correctly classifies the houses.
+
+
+F1-score:
+
+This is the harmonic mean of precision and recall. This mesuremnet indicates a good balance between the model's ability to correctly identify houses built before 1980 and its ability to avoid falsely classifying houses built after 1980 as being built before 1980.
+
+
+ROC-AUC:
+
+This measures the model's ability to distinguish between the two classes, the high score suggests that the model has a great ability to differentiate between houses built before and after 1980.
+
+_The confusion matrix provides a visual representation of the model's performance, showing the number of correct and incorrect predictions for each class._
