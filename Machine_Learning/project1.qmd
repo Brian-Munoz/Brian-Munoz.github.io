@@ -1,7 +1,7 @@
 ---
-title: "Client Report - [Insert Project Title]"
-subtitle: "Course DS 250"
-author: "[STUDENT NAME]"
+title: "dplyr and Gapminder"
+subtitle: "Course DS 350"
+author: "Brian Munoz"
 format:
   html:
     self-contained: true
@@ -22,7 +22,50 @@ format:
         caption: See code
 execute: 
   warning: false
-    
+editor_options: 
+  chunk_output_type: console
 ---
 
-### Paste in a template
+```{r}
+library(tidyverse)
+library(gapminder)
+library(nycflights13)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+
+
+ggplot(gapminder_filtered, aes(x = year, y = gdpPercap, color = continent)) +
+  
+  geom_line(aes(group = country)) +
+  
+  geom_point(aes(group = country, size = pop/100000)) +
+  
+  geom_line(data = weighted_gdp, aes(x = year, y = weighted_gdp), color = "black", size = 0.5) +
+  
+  geom_point(data = weighted_gdp, aes(x = year, y = weighted_gdp, size = pop_total/100000), color = "black") +
+  
+
+  
+  scale_size_continuous(range = c(1, 5), breaks = c(10000, 20000, 30000, 40000, 50000), labels = c("10000", "20000", "30000", "40000", "50000")) +
+  
+  scale_color_manual(values = c("Africa" = "red", "Americas" = "gold", "Asia" = "green", "Europe" = "skyblue", "Oceania" = "purple")) +
+  
+  facet_wrap(~ continent, scales = "fixed", ncol = NULL, as.table = TRUE, axes = "margins", axis.labels = "all", nrow = 1) +
+  
+  
+  labs(
+    y = "GDP Per Capita",
+    x = "Year",
+    color = "continent",
+    size = "Population (100k)"
+  ) +
+  theme(
+    legend.position = "right",
+    axis.text.x = element_text(angle = 90, hjust = 10)
+  )
+
+
+```
