@@ -1,0 +1,399 @@
+---
+title: "Android vs. iPhone"
+subtitle: "Course DS 350"
+author: "Brian Munoz"
+format:
+  html:
+    self-contained: true
+    page-layout: full
+    title-block-banner: true
+    toc: true
+    toc-depth: 3
+    toc-location: body
+    number-sections: false
+    html-math-method: katex
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    code-copy: hover
+    code-tools:
+        source: false
+        toggle: true
+        caption: See code
+    keep-md: true 
+execute: 
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(readxl)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(tidyverse)
+library(viridis)
+library(patchwork)
+
+```
+
+_Market Shares 2014_
+
+__Lets First start analyzing how were the market shares in the year 2014 from statcounter. We can see that Android and iOS are the ones that posses most of the market, been the combine market share a total of 77.5% between the two of them. Among this two Android has shown that posses more than 50% of the global market share. Although iOS posses around 24% of the market shares globaly, is interesting to see that in North america has almost the 50% percent. Which could cause confusion over preference if we only observe the data in places such as United States. __
+
+```{r}
+#Market Share Analysis 10 years ago
+
+# Combine the data into a single dataframe
+
+files <- c("Market_Europe.csv", "Market_North_America.csv", "Market_South_America.csv", "Market_world_wide.csv", "Market_Asia.csv", "Market_Africa.csv")
+
+regions <- c("Europe", "North America", "South America", "Globe", "Asia", "Africa")
+
+data_list <- lapply(files, read_csv)
+names(data_list) <- regions
+
+combined_data <- bind_rows(data_list, .id = "Region")
+
+# Divide the market share values by 100 to convert to percentages
+combined_data$Android <- combined_data$Android / 100
+combined_data$iOS <- combined_data$iOS / 100
+
+# Filter for only 2024 data
+data_2024 <- combined_data %>% filter(Date == 2014)
+
+# Pivot the data to long format
+data_long <- data_2024 %>%
+  pivot_longer(cols = c("Android", "iOS"), names_to = "OS", values_to = "Market_Share")
+
+# Reorder the regions
+data_long$Region <- factor(data_long$Region, levels = c("Globe", "North America", "South America", "Europe", "Asia", "Africa"))
+
+
+# Create the plot
+ggplot(data_long, aes(x = Region, y = Market_Share, fill = OS)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  scale_fill_manual(values = c("Android" = "#3DDC84", "iOS" = "#007AFF")) +
+  geom_text(aes(label = scales::percent(Market_Share)), position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(
+    title = "Mobile Android vs iOS Market Share (2014)",
+    x = "Region",
+    y = "Market Share",
+    fill = "Operating System"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    legend.position = "bottom"
+  )
+```
+
+_Market Shares 2024_
+
+__Now letes analyze the market shares from Android and iOS in the year 2024. The first biggest impact we can see is that after only 10 years, accouding statcounter, the combine market share of Android and iOS is around 99.4%, which means that they hold almost complete control over the market. Over all, Android has been the one that experience the biggest growth, this is thanks to its grow in regions such as Asia and Africa, in which its market share almost double compare to the shares from 10 years ago. Although iOS is constantly increasing its advantage over Andorind in the North America region, we can see that globaly, it only has approximately 28% of the total shares. This is only a 4% growth compare to the shares from 10 years ago.__
+
+__This tell us that globaly, the average person preference Android over iOS. This could be for multiple reasons but I believe that one of the biggest impacts in the income of the average person. We will be explore more about this in the next point. __
+
+```{r}
+
+#Market Share Analysis Now
+
+data_list <- lapply(files, read_csv)
+names(data_list) <- regions
+
+combined_data <- bind_rows(data_list, .id = "Region")
+
+# Divide the market share values by 100 to convert to percentages
+combined_data$Android <- combined_data$Android / 100
+combined_data$iOS <- combined_data$iOS / 100
+
+# Filter for only 2024 data
+data_2024 <- combined_data %>% filter(Date == 2024)
+
+# Pivot the data to long format
+data_long <- data_2024 %>%
+  pivot_longer(cols = c("Android", "iOS"), names_to = "OS", values_to = "Market_Share")
+
+# Reorder the regions
+data_long$Region <- factor(data_long$Region, levels = c("Globe", "North America", "South America", "Europe", "Asia", "Africa"))
+
+# Create the plot
+ggplot(data_long, aes(x = Region, y = Market_Share, fill = OS)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  scale_fill_manual(values = c("Android" = "#3DDC84", "iOS" = "#007AFF")) +
+  geom_text(aes(label = scales::percent(Market_Share)), position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(
+    title = "Mobile Android vs iOS Market Share (2014)",
+    x = "Region",
+    y = "Market Share",
+    fill = "Operating System"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    legend.position = "bottom"
+  )
+```
+
+_Market Shares Growth:_
+
+```{r}
+
+#Market share time line
+
+
+# Read the CSV file
+# Replace the path with the correct path to your file
+market_data <- read_csv("Market_world_wide.csv")
+
+# Convert data to long format for easier plotting
+market_data_long <- market_data %>%
+  pivot_longer(cols = c(Android, iOS), 
+               names_to = "Platform", 
+               values_to = "Market_Share")
+
+# Select start and end points for labeling
+label_data <- market_data_long %>%
+  group_by(Platform) %>%
+  filter(Date %in% c(min(market_data$Date), max(market_data$Date)))
+
+# Create the trendline plot
+ggplot(market_data_long, aes(x = Date, y = Market_Share, color = Platform, group = Platform)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  
+  # Add text labels for start and end points
+  geom_text(data = label_data, 
+            aes(label = paste0(sprintf("%.1f%%", Market_Share))),
+            vjust = -1.5, 
+            hjust = 0.5,
+            size = 3.5,
+            fontface = "bold") +
+  
+  labs(
+    title = "Android vs iOS Market Share Trends (2012-2024)",
+    subtitle = "Evolution of mobile operating systems market share",
+    x = "Year",
+    y = "Market Share (%)",
+    color = "Platform"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, face = "italic"),
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  scale_color_manual(values = c("Android" = "#3DDC84", "iOS" = "#007AFF")) +
+  
+  # Ensure all years are shown on x-axis
+  scale_x_continuous(breaks = market_data$Date, 
+                     labels = as.character(market_data$Date)) +
+  
+  # Extend y-axis slightly to make room for labels
+  expand_limits(y = c(0, max(market_data_long$Market_Share) * 1.1))
+
+
+```
+
+_Average Price_
+
+
+__We can see that in average not only the starting price of devices is not just significatly different, but that we can see that the average iOS user tends to spend more money that the Andorid users. This will help us see why the income is so important in the divece selection process.__
+
+```{r}
+
+
+# Data
+android_price <- 286
+ios_price <- 799
+android_app_spend <- 6.19
+ios_app_spend <- 12.77
+
+# Device Price Comparison
+device_data <- data.frame(
+  Device = c("Android", "iOS"),
+  Price = c(android_price, ios_price)
+)
+device_price_plot <- ggplot(device_data, aes(x = Device, y = Price, fill = Device)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = sprintf("$%g", Price)), vjust = -0.5, size = 4) +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_fill_manual(values = c("Android" = "#3DDC84", "iOS" = "#007AFF")) +  # Changed from scale_color_manual to scale_fill_manual
+  labs(
+    title = "Average Device Prices",
+    x = "Device",
+    y = "Price"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# App Spending Comparison
+app_data <- data.frame(
+  Device = c("Android", "iOS"),
+  AppSpending = c(android_app_spend, ios_app_spend)
+)
+app_spend_plot <- ggplot(app_data, aes(x = Device, y = AppSpending, fill = Device)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = sprintf("$%.2f", AppSpending)), vjust = -0.5, size = 4) +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_fill_manual(values = c("Android" = "#3DDC84", "iOS" = "#007AFF")) +  # Changed from scale_color_manual to scale_fill_manual
+  labs(
+    title = "Average App Spending",
+    x = "Device",
+    y = "App Spending"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Display the plots side-by-side
+device_price_plot + app_spend_plot
+
+```
+
+_Income Analysis_
+
+__We can see in the following graph that the average annual income, which is income before taxes, is, according to WorldData.ifo,  only $17,771. We now now that that base on the average spending and income of the customers, is safe to assume that one of the biggest reasons iOS has been unable to control more of the market share is because of prices. We can expect that until iOS is able to reduce their prices people will tend to select Android over iOS base on prices only.__
+
+___Why does Europe, region with higher acquisition power than North America, choices Android over iPhone?___
+
+___Due to the regulations imposed on iOS in Europe, and the fact that they refuse to comply with all the regulations imposed on them, it has been difficult for iOS to gain more presence in European countries. This explains why countries with high purchasing power choose Android over Apple.___
+
+```{r}
+# Average Income Histogram
+
+# Read the data
+Incomes_2023 <- read_excel("Incomes_2023.xlsx", sheet = "Average_Income")
+
+# Reorder the regions
+Incomes_2023$Region <- factor(Incomes_2023$Region, levels = c("Global", "North America", "South America", "Europe", "Asia", "Africa"))
+
+# Create the histogram
+ggplot(Incomes_2023, aes(x = Region, y = `Average Annual Income ($)`, fill = Region)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.5)) +
+  geom_text(aes(label = scales::comma(`Average Annual Income ($)`)), position = position_dodge(width = 0.9), vjust = -0.5) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 55000)) +
+  theme_minimal() +
+  labs(
+    title = "Average Annual Income by Region",
+    x = "Region",
+    y = "Average Annual Income ($)",
+    caption = "Data Source: Incomes_2023"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 25, hjust = 0.5),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_fill_brewer(palette = "BrewerGreen")
+```
+
+_Fun Facts in the USA (Source: statista)_
+
+_Does Age affect what divice you chooce?_
+
+__We do not adentify a significant difference, the only interesting fact is that the yonger population tends to lead towards the iOS device instead of the cheper option.__
+
+```{r}
+
+smartphone_data <- data.frame(
+  Age = c("18-34 years", "35-54 years", "55 years and older"),
+  iPhone = c(58, 47, 49),
+  Android = c(41, 53, 51)
+)
+
+# Reshape the data to long format
+smartphone_long <- pivot_longer(smartphone_data, 
+                                cols = c(iPhone, Android), 
+                                names_to = "OS", 
+                                values_to = "Percentage")
+
+# Create grouped bar chart with labels
+chart <- ggplot(smartphone_long, aes(x = Age, y = Percentage, fill = OS)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  # Add text labels on top of each bar
+  geom_text(aes(label = paste0(Percentage, "%")), 
+            position = position_dodge(width = 0.7), 
+            vjust = -0.5, 
+            fontface = "bold") +
+  labs(
+    title = "U.S. Smartphone Operating System Ownership by Age",
+    x = "Age Group",
+    y = "Percentage of Users",
+    fill = "Operating System"
+  ) +
+  # Extend y-axis to make room for labels
+  ylim(0, 65) +
+  scale_fill_manual(values = c("iPhone" = "#007AFF", "Android" = "#3DDC84")) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Save the chart
+ggsave("smartphone_os_by_age.png", chart, width = 8, height = 6)
+
+# Display the chart
+print(chart)
+
+```
+
+_Is there a difference correlated to Gender?_
+
+__We can see that the result of the analysis follow the trend world wide, and that gender is not as relevant when taking the decision of choosing devices.__ 
+
+```{r}
+# Mobile OS Preference Analysis by Gender
+
+
+# Create data frame
+mobile_os_data <- data.frame(
+  Gender = c("Female", "Male"),
+  iOS = c(31, 28),
+  Android = c(54, 60)
+)
+
+# Reshape data for grouped bar chart
+mobile_os_long <- pivot_longer(
+  mobile_os_data, 
+  cols = c(iOS, Android), 
+  names_to = "OS", 
+  values_to = "Percentage"
+)
+
+# Create grouped bar chart
+os_preference_chart <- ggplot(mobile_os_long, 
+                               aes(x = Gender, y = Percentage, fill = OS)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  labs(
+    title = "Mobile OS Preference by Gender",
+    y = "Percentage of Users",
+    x = "Gender",
+    fill = "Operating System"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Android" = "#3DDC84", "iOS" = "#007AFF")) +
+  geom_text(
+    aes(label = paste0(Percentage, "%")), 
+    position = position_dodge(width = 0.7),
+    vjust = -0.5,
+    fontface = "bold"
+  ) +
+  ylim(0, 70)
+
+# Save the plot
+ggsave("mobile_os_preference_grouped_barchart.png", os_preference_chart, width = 8, height = 6)
+
+# Display the plot (useful in R Studio)
+print(os_preference_chart)
+
+
+```
+
+
+
